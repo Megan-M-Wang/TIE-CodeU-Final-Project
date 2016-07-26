@@ -74,6 +74,7 @@ public class WikiCrawler {
 
       //Otherwise get the Wiki page from Wikipedia
       else {
+         System.out.println(url);
          paragraph = wf.fetchWikipedia(url);
       }
 
@@ -117,10 +118,13 @@ public class WikiCrawler {
 	}
 
 	public static void main(String[] args) throws IOException {
-		
+	
 		// make a WikiCrawler
 		Jedis jedis = JedisMaker.make();
 		JedisIndex index = new JedisIndex(jedis); 
+      index.deleteTermCounters();
+      index.deleteURLSets();
+      index.deleteAllKeys();
 		String source = "https://en.wikipedia.org/wiki/Java_(programming_language)";
 		WikiCrawler wc = new WikiCrawler(source, index);
 		
@@ -134,12 +138,11 @@ public class WikiCrawler {
 			res = wc.crawl(false);
 
             // REMOVE THIS BREAK STATEMENT WHEN crawl() IS WORKING
-            break;
-		} while (res == null);
-		
+		} while (true);
+	/*	
 		Map<String, Integer> map = index.getCounts("the");
 		for (Entry<String, Integer> entry: map.entrySet()) {
 			System.out.println(entry);
-		}
+		}*/
 	}
 }
