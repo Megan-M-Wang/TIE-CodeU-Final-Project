@@ -74,7 +74,6 @@ public class WikiCrawler {
 
       //Otherwise get the Wiki page from Wikipedia
       else {
-         System.out.println(url);
          paragraph = wf.fetchWikipedia(url);
       }
 
@@ -131,14 +130,17 @@ public class WikiCrawler {
 		// for testing purposes, load up the queue
 		Elements paragraphs = wf.fetchWikipedia(source);
 		wc.queueInternalLinks(paragraphs);
-
+      int count = 0;
 		// loop until we index a new page
 		String res;
 		do {
 			res = wc.crawl(false);
-
+         
+         if( res != null ) {
+            count++;
+         }
             // REMOVE THIS BREAK STATEMENT WHEN crawl() IS WORKING
-		} while (true);
+		} while (count < 23);
 	/*	
 		Map<String, Integer> map = index.getCounts("the");
 		for (Entry<String, Integer> entry: map.entrySet()) {
