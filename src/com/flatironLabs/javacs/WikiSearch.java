@@ -187,7 +187,7 @@ public class WikiSearch {
 
 		// make a JedisIndex
 		Jedis jedis = JedisMaker.make();
-		JedisIndex index = new JedisIndex(jedis); 
+		JedisIndex index = new JedisIndex(jedis);
       String term1;
       String term2;
 		Scanner keyboard = new Scanner(System.in);
