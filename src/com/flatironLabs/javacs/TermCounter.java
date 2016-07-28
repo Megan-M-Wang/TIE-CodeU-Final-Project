@@ -80,6 +80,11 @@ public class TermCounter {
 		
 		for (int i=0; i<array.length; i++) {
 			String term = array[i];
+
+         if( term.equals("the") || term.equals("a") ) {
+            continue;
+         }
+
 			incrementTermCount(term);
 		}
 	}
