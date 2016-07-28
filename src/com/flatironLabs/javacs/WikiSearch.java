@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import redis.clients.jedis.Jedis;
+import java.util.Scanner;
 
 
 /**
@@ -183,19 +184,24 @@ public class WikiSearch {
 	}
 
 	public static void main(String[] args) throws IOException {
-		
+
 		// make a JedisIndex
 		Jedis jedis = JedisMaker.make();
 		JedisIndex index = new JedisIndex(jedis); 
-		
+		Scanner keyboard = new Scanner(System.in);
+
+		// make a scanner for input
+		System.out.println("Enter a search term: ");
+
 		// search for the first term
-		String term1 = "java";
+		String term1 = keyboard.next();
 		System.out.println("Query: " + term1);
 		WikiSearch search1 = search(term1, index);
 		search1.print();
 		
 		// search for the second term
-		String term2 = "programming";
+		System.out.println("Enter search term: ");
+		String term2 = keyboard.next();
 		System.out.println("Query: " + term2);
 		WikiSearch search2 = search(term2, index);
 		search2.print();
