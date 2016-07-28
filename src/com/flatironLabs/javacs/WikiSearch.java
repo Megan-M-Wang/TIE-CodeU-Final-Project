@@ -201,22 +201,22 @@ public class WikiSearch {
          term1.toLowerCase();
          //term = term.replaceAll("\\s", "");
 
-		   // search for the first term
-		   System.out.println("Query: " + term1);
-		   WikiSearch search1 = search(term1, index);
-		   search1.print();
+         // search for the first term
+         System.out.println("Query: " + term1);
+         WikiSearch search1 = search(term1, index);
+         search1.print();
 		
-		   // prompt for the second term
-		   System.out.println("\nEnter search term: ");
+         // prompt for the second term
+         System.out.println("\nEnter search term: ");
          
          term2 = keyboard.nextLine();
          term2.toLowerCase();
          //term = term.replaceAll("\\s", "");
 
          //Second term search
-		   System.out.println("Query: " + term2);
-		   WikiSearch search2 = search(term2, index);
-		   search2.print();
+         System.out.println("Query: " + term2);
+         WikiSearch search2 = search(term2, index);
+         search2.print();
          
          //Intersection
          System.out.println("\nQuery: " + term1 + " AND " + term2);
@@ -234,7 +234,7 @@ public class WikiSearch {
          exclusion.print();
 		   
          //Prompt for new input
-		   System.out.println("\nEnter search term: ");
+         System.out.println("\nEnter search term: ");
       }
 	}
 }
