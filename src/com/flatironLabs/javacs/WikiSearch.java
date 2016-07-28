@@ -48,9 +48,11 @@ public class WikiSearch {
 	 * @param map
 	 */
 	private  void print() {
+
+      //Print in reverse order of term frequency
 		List<Entry<String, Integer>> entries = sort();
-		for (Entry<String, Integer> entry: entries) {
-			System.out.println(entry);
+		for (int index = entries.size() - 1; index >= 0; index-- ) {
+			System.out.println(entries.get(index).getKey());
 		}
 	}
 	
@@ -198,7 +200,7 @@ public class WikiSearch {
       while( keyboard.hasNextLine() == true ) {
          
          term1 = keyboard.nextLine();
-         term1.toLowerCase();
+         term1 = term1.toLowerCase();
          //term = term.replaceAll("\\s", "");
 
          // search for the first term
@@ -210,7 +212,7 @@ public class WikiSearch {
          System.out.println("\nEnter search term: ");
          
          term2 = keyboard.nextLine();
-         term2.toLowerCase();
+         term2 = term2.toLowerCase();
          //term = term.replaceAll("\\s", "");
 
          //Second term search
