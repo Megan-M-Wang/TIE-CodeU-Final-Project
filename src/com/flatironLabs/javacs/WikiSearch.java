@@ -236,7 +236,7 @@ public class WikiSearch {
          //Prompt for new input
          System.out.println("\nEnter search term: ");
       }
-	}
+   }
 }
 
       
