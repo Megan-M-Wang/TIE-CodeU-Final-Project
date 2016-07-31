@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.Arrays;
 
 import org.jsoup.nodes.Node;
 import org.jsoup.nodes.TextNode;
@@ -20,6 +21,7 @@ public class TermCounter {
 	
 	private Map<String, Integer> map;
 	private String label;
+   private String[] stopWords = {"the", "a", "and", "or", "because", "there"};
 	
 	public TermCounter(String label) {
 		this.label = label;
@@ -81,7 +83,7 @@ public class TermCounter {
 		for (int i=0; i<array.length; i++) {
 			String term = array[i];
 
-         if( term.equals("the") || term.equals("a") ) {
+         if( Arrays.asList(stopWords).contains(term) ) {
             continue;
          }
 
