@@ -6,8 +6,10 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.lang.Math;
 
 import redis.clients.jedis.Jedis;
 import java.util.Scanner;
@@ -20,14 +22,13 @@ import java.util.Scanner;
 public class WikiSearch {
 	
 	// map from URLs that contain the term(s) to relevance score
-	private Map<String, Integer> map;
-
+	private Map<String, Double> map;
 	/**
 	 * Constructor.
 	 * 
 	 * @param map
 	 */
-	public WikiSearch(Map<String, Integer> map) {
+	public WikiSearch(Map<String, Double> map) {
 		this.map = map;
 	}
 	
@@ -37,8 +38,8 @@ public class WikiSearch {
 	 * @param url
 	 * @return
 	 */
-	public Integer getRelevance(String url) {
-		Integer relevance = map.get(url);
+	public Double getRelevance(String url) {
+		Double relevance = map.get(url);
 		return relevance==null ? 0: relevance;
 	}
 	
@@ -47,12 +48,26 @@ public class WikiSearch {
 	 * 
 	 * @param map
 	 */
-	private  void print() {
+	private void print(double totalPages) {
+     
+      //Get the list of entries and the size (# of urls with term
+		List<Entry<String, Double>> entries = sort();
+      double termPages = entries.size();
 
-      //Print in reverse order of term frequency
-		List<Entry<String, Integer>> entries = sort();
-		for (int index = entries.size() - 1; index >= 0; index-- ) {
-			System.out.println(entries.get(index).getKey());
+      //Calculate the iDF (total Pages / term pages)
+      double iDF = Math.abs(Math.log(termPages / totalPages));
+      
+      //Update the value of each page with the tf-idf ranking
+      for( int index = 0; index < entries.size(); index++ ) {
+         entries.get(index).setValue(entries.get(index).getValue() * iDF );
+      }
+
+      //Sort the new list
+		List<Entry<String, Double>> entriesIDF = sort();
+
+      //Print out in reverse order (highest ranking first)
+		for (int index = entriesIDF.size() - 1; index >= 0; index-- ) {
+			System.out.println(entriesIDF.get(index).getKey());
 		}
 	}
 	
@@ -63,7 +78,7 @@ public class WikiSearch {
 	 * @return New WikiSearch object.
 	 */
 	public WikiSearch or(WikiSearch that) {
-      Map<String,Integer> unionMap = new HashMap<String,Integer>();
+      Map<String,Double> unionMap = new HashMap<String,Double>();
       unionMap.putAll(that.map);
       List<String> valueList = new LinkedList(map.keySet());
 
@@ -71,7 +86,7 @@ public class WikiSearch {
          String url = valueList.get(index);
 
          if( that.map.containsKey(url) ) {
-            unionMap.put( url, new Integer( getRelevance(url) + 
+            unionMap.put( url, new Double( getRelevance(url) + 
                that.getRelevance(url) ) );
          }
 
@@ -91,14 +106,14 @@ public class WikiSearch {
 	 */
 	public WikiSearch and(WikiSearch that) {
         
-      Map<String,Integer> andMap = new HashMap<String,Integer>();
+      Map<String,Double> andMap = new HashMap<String,Double>();
       List<String> valueList = new LinkedList(map.keySet());
 
       for( int index = 0; index < valueList.size(); index++ ) {
          String url = valueList.get(index);
 
          if( that.map.containsKey(url) ) {
-            andMap.put( url, new Integer( getRelevance(url) 
+            andMap.put( url, new Double( getRelevance(url) 
                + that.getRelevance(url) ) );
          }
       }
@@ -114,7 +129,7 @@ public class WikiSearch {
 	 */
 	public WikiSearch minus(WikiSearch that) {
 
-      Map<String,Integer> minusMap = new HashMap<String,Integer>();
+      Map<String,Double> minusMap = new HashMap<String,Double>();
       List<String> valueList = new LinkedList(map.keySet());
 
       for( int index = 0; index < valueList.size(); index++ ) {
@@ -135,7 +150,7 @@ public class WikiSearch {
 	 * @param rel2: relevance score for the second search
 	 * @return
 	 */
-	protected int totalRelevance(Integer rel1, Integer rel2) {
+	protected double totalRelevance(Double rel1, Double rel2) {
 		// simple starting place: relevance is the sum of the term frequencies.
 		return rel1 + rel2;
 	}
@@ -145,16 +160,16 @@ public class WikiSearch {
 	 * 
 	 * @return List of entries with URL and relevance.
 	 */
-	public List<Entry<String, Integer>> sort() {
+	public List<Entry<String, Double>> sort() {
       
       List sortedEntry = new LinkedList(map.entrySet());
      
-      Comparator<Map.Entry<String, Integer>> comparator = 
-         new Comparator<Map.Entry<String, Integer>>() {
+      Comparator<Map.Entry<String, Double>> comparator = 
+         new Comparator<Map.Entry<String, Double>>() {
 
          @Override
-         public int compare( Map.Entry<String,Integer> node1, 
-            Map.Entry<String, Integer> node2) {
+         public int compare( Map.Entry<String,Double> node1, 
+            Map.Entry<String, Double> node2) {
 
             if( node1.getValue() < node2.getValue() ) {
                return -1;
@@ -181,7 +196,7 @@ public class WikiSearch {
 	 * @return
 	 */
 	public static WikiSearch search(String term, JedisIndex index) {
-		Map<String, Integer> map = index.getCounts(term);
+		Map<String, Double> map = index.getCounts(term);
 		return new WikiSearch(map);
 	}
 
@@ -201,19 +216,17 @@ public class WikiSearch {
          
          term1 = keyboard.nextLine();
          term1 = term1.toLowerCase();
-         //term = term.replaceAll("\\s", "");
 
          // search for the first term
          System.out.println("Query: " + term1);
          WikiSearch search1 = search(term1, index);
-         search1.print();
-		
+         search1.print(23.0);
+         
          // prompt for the second term
          System.out.println("\nEnter search term: ");
          
          term2 = keyboard.nextLine();
          term2 = term2.toLowerCase();
-         //term = term.replaceAll("\\s", "");
 
          //Second term search
          System.out.println("Query: " + term2);
@@ -234,7 +247,7 @@ public class WikiSearch {
          System.out.println("\nQuery: " + term1 + " MINUS " + term2);
          WikiSearch exclusion = search1.minus(search2);
          exclusion.print();
-		   
+*/		   
          //Prompt for new input
          System.out.println("\nEnter search term: ");
       }

@@ -19,13 +19,14 @@ import org.jsoup.select.Elements;
  */
 public class TermCounter {
 	
-	private Map<String, Integer> map;
+	private Map<String, Double> map;
 	private String label;
-   private String[] stopWords = {"the", "a", "and", "or", "because", "there"};
+   private String[] stopWords = {"the", "a", "and", "or", "because", "there", "is", "of",
+      "at", "with", "were"};
 	
 	public TermCounter(String label) {
 		this.label = label;
-		this.map = new HashMap<String, Integer>();
+		this.map = new HashMap<String, Double>();
 	}
 	
 	public String getLabel() {
@@ -37,9 +38,9 @@ public class TermCounter {
 	 * 
 	 * @return
 	 */
-	public int size() {
-		int total = 0;
-		for (Integer value: map.values()) {
+	public double size() {
+		double total = 0;
+		for (Double value: map.values()) {
 			total += value;
 		}
 		return total;
@@ -98,7 +99,7 @@ public class TermCounter {
 	 */
 	public void incrementTermCount(String term) {
 		// System.out.println(term);
-		put(term, get(term) + 1);
+		put(term, get(term) + 1.0 );
 	}
 
 	/**
@@ -107,7 +108,7 @@ public class TermCounter {
 	 * @param term
 	 * @param count
 	 */
-	public void put(String term, int count) {
+	public void put(String term, double count) {
 		map.put(term, count);
 	}
 
@@ -117,8 +118,8 @@ public class TermCounter {
 	 * @param term
 	 * @return
 	 */
-	public Integer get(String term) {
-		Integer count = map.get(term);
+	public Double get(String term) {
+		Double count = map.get(term);
 		return count == null ? 0 : count;
 	}
 
@@ -136,7 +137,7 @@ public class TermCounter {
 	 */
 	public void printCounts() {
 		for (String key: keySet()) {
-			Integer count = get(key);
+			Double count = get(key);
 			System.out.println(key + ", " + count);
 		}
 		System.out.println("Total of all counts = " + size());
