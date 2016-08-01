@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Queue;
+import java.util.Arrays;
 
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -15,10 +16,10 @@ import redis.clients.jedis.Jedis;
 public class WikiCrawler {
 	// keeps track of where we started
 	private final String source;
-	
+
 	// the index where the results go
 	private JedisIndex index;
-	
+
 	// queue of URLs to be indexed
 	private Queue<String> queue = new LinkedList<String>();
 	

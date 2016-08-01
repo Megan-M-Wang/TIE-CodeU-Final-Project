@@ -13,6 +13,7 @@ import java.lang.Math;
 
 import redis.clients.jedis.Jedis;
 import java.util.Scanner;
+import java.util.*;
 
 
 /**
@@ -200,56 +201,75 @@ public class WikiSearch {
 		return new WikiSearch(map);
 	}
 
+
+	public static ArrayList<WikiSearch> searchTerms(String term, JedisIndex index) {
+		ArrayList<WikiSearch> termArray = new ArrayList<WikiSearch>();
+		termArray.add(search(term, index));
+
+		int searchIndex;
+		String term1;
+		String term2;
+		WikiSearch search1;
+		WikiSearch search2;
+
+
+		if (term.contains(" or ")) {
+			searchIndex = term.indexOf(" or ");
+			term1 = term.substring(0, searchIndex);
+			term2 = term.substring(searchIndex + 4);
+			search1 = search(term1, index);
+			search2 = search(term2, index);
+			termArray.add(search1.or(search2));
+		}
+
+		if (term.contains(" and ")) {
+			searchIndex = term.indexOf(" and ");
+			term1 = term.substring(0, searchIndex);
+			term2 = term.substring(searchIndex + 5);
+			search1 = search(term1, index);
+			search2 = search(term2, index);
+			termArray.add(search1.and(search2));
+		}
+
+		if (term.contains(" minus ")) {
+			searchIndex = term.indexOf(" minus ");
+			term1 = term.substring(0, searchIndex);
+			term2 = term.substring(searchIndex + 7);
+			search1 = search(term1, index);
+			search2 = search(term2, index);
+			termArray.add(search1.minus(search2));
+		}
+
+		return termArray;
+	}
+
+
 	public static void main(String[] args) throws IOException {
 
 		// make a JedisIndex
 		Jedis jedis = JedisMaker.make();
 		JedisIndex index = new JedisIndex(jedis);
       String term1;
-      String term2;
 		Scanner keyboard = new Scanner(System.in);
 		
       // make a scanner for input
 		System.out.println("Enter a search term: ");
 
-      while( keyboard.hasNextLine() == true ) {
-         
+      while( keyboard.hasNextLine() == true) {
+
          term1 = keyboard.nextLine();
          term1 = term1.toLowerCase();
 
-         // search for the first term
-         System.out.println("Query: " + term1);
-         WikiSearch search1 = search(term1, index);
-         search1.print(23.0);
-         
-         // prompt for the second term
-         System.out.println("\nEnter search term: ");
-         
-         term2 = keyboard.nextLine();
-         term2 = term2.toLowerCase();
+		  // Accounting for lone terms, intersection, union, and minus
+		  System.out.println("\nQuery: " + term1);
+		  ArrayList<WikiSearch> alltheseterms = searchTerms(term1, index);
+		  for (WikiSearch search: alltheseterms) {
+			  search.print(23.0);
+		  }
 
-         //Second term search
-         System.out.println("Query: " + term2);
-         WikiSearch search2 = search(term2, index);
-         search2.print();
-         
-         //Intersection
-         System.out.println("\nQuery: " + term1 + " AND " + term2);
-         WikiSearch intersection = search1.and(search2);
-         intersection.print();
-         
-         //Union
-         System.out.println("\nQuery: " + term1 + " OR " + term2);
-         WikiSearch unionSearch = search1.or(search2);
-         unionSearch.print();
-
-         //Minus
-         System.out.println("\nQuery: " + term1 + " MINUS " + term2);
-         WikiSearch exclusion = search1.minus(search2);
-         exclusion.print();
-*/		   
-         //Prompt for new input
-         System.out.println("\nEnter search term: ");
+        //Prompt for new input
+        System.out.println("\nEnter search term: ");
+		   
       }
    }
 }
