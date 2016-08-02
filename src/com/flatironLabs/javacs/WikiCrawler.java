@@ -140,6 +140,7 @@ public class WikiCrawler {
          if( res != null ) {
             count++;
          }
+         System.out.println(count);
             // REMOVE THIS BREAK STATEMENT WHEN crawl() IS WORKING
 		} while (count < 10000);
 	/*	
