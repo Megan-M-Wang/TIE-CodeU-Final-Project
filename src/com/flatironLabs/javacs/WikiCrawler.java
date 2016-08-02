@@ -141,7 +141,7 @@ public class WikiCrawler {
             count++;
          }
             // REMOVE THIS BREAK STATEMENT WHEN crawl() IS WORKING
-		} while (count < 23);
+		} while (count < 10000);
 	/*	
 		Map<String, Integer> map = index.getCounts("the");
 		for (Entry<String, Integer> entry: map.entrySet()) {
