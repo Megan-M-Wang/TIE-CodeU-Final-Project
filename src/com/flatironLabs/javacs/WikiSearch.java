@@ -21,6 +21,8 @@ import java.util.*;
  *
  */
 public class WikiSearch {
+
+   private static double totalPages = 10000;
 	
 	// map from URLs that contain the term(s) to relevance score
 	private Map<String, Double> map;
@@ -49,7 +51,7 @@ public class WikiSearch {
 	 * 
 	 * @param map
 	 */
-	private void print(double totalPages) {
+	private void print(boolean fullResult) {
      
       //Get the list of entries and the size (# of urls with term
 		List<Entry<String, Double>> entries = sort();
@@ -65,10 +67,17 @@ public class WikiSearch {
 
       //Sort the new list
 		List<Entry<String, Double>> entriesIDF = sort();
-
+      
+      int count = 1;
       //Print out in reverse order (highest ranking first)
 		for (int index = entriesIDF.size() - 1; index >= 0; index-- ) {
 			System.out.println(entriesIDF.get(index).getKey());
+         
+         if( count == 20 && fullResult == false ) {
+            return;
+         }
+
+         count++;
 		}
 	}
 	
@@ -264,7 +273,7 @@ public class WikiSearch {
 		  System.out.println("\nQuery: " + term1);
 		  ArrayList<WikiSearch> alltheseterms = searchTerms(term1, index);
 		  for (WikiSearch search: alltheseterms) {
-			  search.print(23.0);
+			  search.print(false);
 		  }
 
         //Prompt for new input
