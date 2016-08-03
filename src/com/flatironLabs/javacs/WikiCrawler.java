@@ -80,7 +80,11 @@ public class WikiCrawler {
 
       //Index the page and queue the Internal links
       index.indexPage(url, paragraph);
-      queueInternalLinks(paragraph);
+
+      if( url.contains("https://en.wikipedia.org/")) {
+         queueInternalLinks(paragraph);
+      }
+
 		return url;
 	}
 	
@@ -113,6 +117,15 @@ public class WikiCrawler {
                String url = urlNode.attr("abs:href");
                queue.offer(url);
             }
+
+            else {
+               String url = urlNode.attr("abs:href");
+               
+               if( !(url.contains("https://en.wikipedia.org/")) ) {
+                  System.out.println("NOT WIKI" + url);
+                  queue.offer(url);
+               }
+            }
          }
       }
 	}
@@ -140,13 +153,11 @@ public class WikiCrawler {
          if( res != null ) {
             count++;
          }
-         System.out.println(count);
+         
+         if( count % 1000 == 0 ) {
+            System.out.println(count);
+         }
             // REMOVE THIS BREAK STATEMENT WHEN crawl() IS WORKING
 		} while (count < 10000);
-	/*	
-		Map<String, Integer> map = index.getCounts("the");
-		for (Entry<String, Integer> entry: map.entrySet()) {
-			System.out.println(entry);
-		}*/
 	}
 }
