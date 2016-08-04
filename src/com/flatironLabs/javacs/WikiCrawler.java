@@ -122,7 +122,6 @@ public class WikiCrawler {
                String url = urlNode.attr("abs:href");
                
                if( !(url.contains("https://en.wikipedia.org/")) ) {
-                  System.out.println("NOT WIKI" + url);
                   queue.offer(url);
                }
             }
