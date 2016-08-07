@@ -22,7 +22,7 @@ public class TermCounter {
 	private Map<String, Double> map;
 	private String label;
    private String[] stopWords = {"the", "a", "and", "or", "because", "there", "is", "of",
-      "at", "with", "were"};
+      "at", "with", "were", "if", "so", "then", "was", "when", "I", "you", "they"};
 	
 	public TermCounter(String label) {
 		this.label = label;
@@ -83,7 +83,8 @@ public class TermCounter {
 		
 		for (int i=0; i<array.length; i++) {
 			String term = array[i];
-
+         
+         term = term.toLowerCase();
          if( Arrays.asList(stopWords).contains(term) ) {
             continue;
          }

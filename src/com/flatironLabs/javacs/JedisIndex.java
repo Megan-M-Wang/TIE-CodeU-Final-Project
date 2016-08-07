@@ -153,9 +153,13 @@ public class JedisIndex {
 		// make a TermCounter and count the terms in the paragraphs
 		TermCounter tc = new TermCounter(url);
 		tc.processElements(paragraphs);
-	   
-      double size = tc.size();
-      System.out.println(size);
+
+      double size  = 0;
+
+      for (String entry : tc.keySet()) {
+         size += tc.get(entry);
+      } 
+
       for( String term: tc.keySet() ) {
          tc.put( term, tc.get(term) / size);
       }

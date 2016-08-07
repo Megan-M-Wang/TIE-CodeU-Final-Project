@@ -78,6 +78,10 @@ public class WikiCrawler {
          paragraph = wf.fetchWikipedia(url);
       }
 
+      if( paragraph == null ) {
+         return null;
+      }
+
       //Index the page and queue the Internal links
       index.indexPage(url, paragraph);
 
@@ -137,7 +141,7 @@ public class WikiCrawler {
       index.deleteTermCounters();
       index.deleteURLSets();
       index.deleteAllKeys();
-		String source = "https://en.wikipedia.org/wiki/Java_(programming_language)";
+		String source = "https://en.wikipedia.org/wiki/Main_Page";
 		WikiCrawler wc = new WikiCrawler(source, index);
 		
 		// for testing purposes, load up the queue
