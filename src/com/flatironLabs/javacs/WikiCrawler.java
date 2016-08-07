@@ -141,7 +141,8 @@ public class WikiCrawler {
       index.deleteTermCounters();
       index.deleteURLSets();
       index.deleteAllKeys();
-		String source = "https://en.wikipedia.org/wiki/Main_Page";
+		//String source = "https://en.wikipedia.org/wiki/Main_Page";
+      String source = "https://en.wikipedia.org/wiki/Java_(programming_language)";
 		WikiCrawler wc = new WikiCrawler(source, index);
 		
 		// for testing purposes, load up the queue

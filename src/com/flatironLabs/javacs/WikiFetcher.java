@@ -25,16 +25,23 @@ public class WikiFetcher {
 	 */
 	public Elements fetchWikipedia(String url) throws IOException {
 		sleepIfNeeded();
+      Elements paras;
 
-		// download and parse the document
-		Connection conn = Jsoup.connect(url);
-		Document doc = conn.get();
+      try {
+		   // download and parse the document
+		   Connection conn = Jsoup.connect(url);
+		   Document doc = conn.get();
 
-		// select the content text and pull out the paragraphs.
-		Elements content = doc.getElementsByTag("p");
+		   // select the content text and pull out the paragraphs.
+		   Elements content = doc.getElementsByTag("p");
 
-		// TODO: avoid selecting paragraphs from sidebars and boxouts
-		Elements paras = content.select("p");
+		   // TODO: avoid selecting paragraphs from sidebars and boxouts
+		   paras = content.select("p");
+      }
+      catch( Exception e ) {
+         return null;
+      }
+
 		return paras;
 	}
 
