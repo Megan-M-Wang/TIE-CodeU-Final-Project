@@ -58,7 +58,7 @@ public class WikiSearch {
       double termPages = entries.size();
 
       //Calculate the iDF (total Pages / term pages)
-      double iDF = Math.abs(Math.log(termPages / totalPages));
+      double iDF = Math.abs(Math.log(totalPages / termPages) + 1.0);
       
       //Update the value of each page with the tf-idf ranking
       for( int index = 0; index < entries.size(); index++ ) {
