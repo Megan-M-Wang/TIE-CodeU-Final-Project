@@ -52,7 +52,7 @@ public class WikiSearch {
 	 * @param map
 	 */
 	private void print(boolean fullResult) {
-     
+    
       //Get the list of entries and the size (# of urls with term
 		List<Entry<String, Double>> entries = sort();
       double termPages = entries.size();
@@ -71,12 +71,14 @@ public class WikiSearch {
       int count = 1;
       //Print out in reverse order (highest ranking first)
 		for (int index = entriesIDF.size() - 1; index >= 0; index-- ) {
+            
+         //Print the url and add it to the list of already indexed terms
 			System.out.println(entriesIDF.get(index).getKey());
          
-         if( count == 20 && fullResult == false ) {
+         if( count > 20 && fullResult == false ) {
             return;
          }
-
+         
          count++;
 		}
 	}
@@ -213,7 +215,7 @@ public class WikiSearch {
 
 	public static ArrayList<WikiSearch> searchTerms(String term, JedisIndex index) {
 		ArrayList<WikiSearch> termArray = new ArrayList<WikiSearch>();
-		termArray.add(search(term, index));
+		//termArray.add(search(term, index));
 
 		int searchIndex;
 		String term1;
@@ -231,7 +233,7 @@ public class WikiSearch {
 			termArray.add(search1.or(search2));
 		}
 
-		if (term.contains(" and ")) {
+		else if (term.contains(" and ")) {
 			searchIndex = term.indexOf(" and ");
 			term1 = term.substring(0, searchIndex);
 			term2 = term.substring(searchIndex + 5);
@@ -240,7 +242,7 @@ public class WikiSearch {
 			termArray.add(search1.and(search2));
 		}
 
-		if (term.contains(" minus ")) {
+		else if (term.contains(" minus ")) {
 			searchIndex = term.indexOf(" minus ");
 			term1 = term.substring(0, searchIndex);
 			term2 = term.substring(searchIndex + 7);
@@ -249,9 +251,29 @@ public class WikiSearch {
 			termArray.add(search1.minus(search2));
 		}
 
+      else {
+         //Split the term up into an array of words
+         String[] splitTerm = term.split(" ");
+
+         //Intersection of the searchs
+         WikiSearch sentenceIntersect = search(splitTerm[0], index);
+
+         //Union of the searches
+         WikiSearch sentenceUnion = search(splitTerm[0], index);
+      
+         //Loop through the terms in the array and modify the search union and
+         //intersection
+         for( int itera = 1; itera < splitTerm.length; itera++ ) {
+            sentenceIntersect = sentenceIntersect.and(search(splitTerm[itera], index));
+            sentenceUnion = sentenceUnion.or(search(splitTerm[itera], index));
+         }
+
+         //Add results to the array and return
+         termArray.add(sentenceIntersect);
+         termArray.add(sentenceUnion.minus(sentenceIntersect));
+      } 
 		return termArray;
 	}
-
 
 	public static void main(String[] args) throws IOException {
 
