@@ -61,8 +61,6 @@ public class WikiSearch {
    }
 
    public void writeTagLine( String url ) throws IOException {
-      Document doc = Jsoup.connect(url).get();
-      System.out.println(doc.select("meta[name=description]").get(0).attr("content"));
    } 
 
 	/**
@@ -96,7 +94,7 @@ public class WikiSearch {
          //Print the url and add it to the list of already indexed terms
 			System.out.println(entriesIDF.get(index).getKey() + "\n");
 
-         //writeTagLine(entriesIDF.get(index).getKey());
+         writeTagLine(entriesIDF.get(index).getKey());
          
          if( count > 20 && fullResult == false ) {
             return;
@@ -142,6 +140,7 @@ public class WikiSearch {
 	 */
 	public WikiSearch and(WikiSearch that) {
         
+      //Loop through the terms and only add duplicates
       Map<String,Double> andMap = new HashMap<String,Double>();
       List<String> valueList = new LinkedList(map.keySet());
 
@@ -149,8 +148,8 @@ public class WikiSearch {
          String url = valueList.get(index);
 
          if( that.map.containsKey(url) ) {
-            andMap.put( url, new Double( getRelevance(url) 
-               + that.getRelevance(url) ) );
+            andMap.put( url, new Double( totalRelevance(getRelevance(url),
+               that.getRelevance(url) )) );
          }
       }
 
@@ -164,7 +163,8 @@ public class WikiSearch {
 	 * @return New WikiSearch object.
 	 */
 	public WikiSearch minus(WikiSearch that) {
-
+      
+      //Loop through the terms and only add non-duplicates
       Map<String,Double> minusMap = new HashMap<String,Double>();
       List<String> valueList = new LinkedList(map.keySet());
 
@@ -198,8 +198,10 @@ public class WikiSearch {
 	 */
 	public List<Entry<String, Double>> sort() {
       
+      //Return list
       List sortedEntry = new LinkedList(map.entrySet());
      
+      //Establish the comparator
       Comparator<Map.Entry<String, Double>> comparator = 
          new Comparator<Map.Entry<String, Double>>() {
 
@@ -238,7 +240,6 @@ public class WikiSearch {
 
 
 	public static WikiSearch searchTerms(String term, JedisIndex index) {
-		ArrayList<WikiSearch> termArray = new ArrayList<WikiSearch>();
 		WikiSearch search = search(term, index);
 
 		int searchIndex;
@@ -290,8 +291,8 @@ public class WikiSearch {
          }
 
          //Add results to the array and return
-         termArray.add(sentenceIntersect);
-         termArray.add(sentenceUnion.minus(sentenceIntersect));
+         search = search.or(sentenceIntersect);
+         search = search.or(sentenceUnion);
       } 
 		return search;
 	}

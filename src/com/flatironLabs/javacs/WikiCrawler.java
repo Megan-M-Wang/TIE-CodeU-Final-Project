@@ -122,6 +122,7 @@ public class WikiCrawler {
                queue.offer(url);
             }
 
+            //Otherwise if no wiki then still index -- without base wiki url
             else {
                String url = urlNode.attr("abs:href");
                
@@ -139,11 +140,11 @@ public class WikiCrawler {
 		Jedis jedis = JedisMaker.make();
 		JedisIndex index = new JedisIndex(jedis); 
 
-      String source = "https://en.wikipedia.org/wiki/Java_(programming_language)";
+      //String source = "https://en.wikipedia.org/wiki/Java_(programming_language)";
       index.deleteTermCounters();
       index.deleteURLSets();
       index.deleteAllKeys();
-		//String source = "https://en.wikipedia.org/wiki/Main_Page";
+		String source = "https://en.wikipedia.org/wiki/Main_Page";
 		WikiCrawler wc = new WikiCrawler(source, index);
 		
 		// for testing purposes, load up the queue
