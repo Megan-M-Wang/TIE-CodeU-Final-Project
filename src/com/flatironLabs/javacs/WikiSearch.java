@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.lang.Math;
 
+import java.util.concurrent.TimeUnit;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -48,13 +49,28 @@ public class WikiSearch {
 		Double relevance = map.get(url);
 		return relevance==null ? 0: relevance;
 	}
-	
+
+   /**
+    * Looks up the title of the given url and prints
+    *
+    * @param url
+    */
+   public void readTitle( String url ) throws IOException {
+      Document doc = Jsoup.connect(url).get();
+      System.out.println(doc.title());
+   }
+
+   public void writeTagLine( String url ) throws IOException {
+      Document doc = Jsoup.connect(url).get();
+      System.out.println(doc.select("meta[name=description]").get(0).attr("content"));
+   } 
+
 	/**
 	 * Prints the contents in order of term frequency.
 	 * 
 	 * @param map
 	 */
-	private void print(boolean fullResult) throws IOException {
+	private void print(boolean fullResult) throws IOException, InterruptedException {
     
       //Get the list of entries and the size (# of urls with term
 		List<Entry<String, Double>> entries = sort();
@@ -75,20 +91,19 @@ public class WikiSearch {
       //Print out in reverse order (highest ranking first)
 		for (int index = entriesIDF.size() - 1; index >= 0; index-- ) {
         
-         //Connect to url - get the title and print it
-         Document doc = Jsoup.connect(entriesIDF.get(index).getKey()).get();
-         String title = doc.title();
-         System.out.println(title);
-
+         readTitle(entriesIDF.get(index).getKey());
+         
          //Print the url and add it to the list of already indexed terms
-			System.out.println(entriesIDF.get(index).getKey());
-         System.out.println();
+			System.out.println(entriesIDF.get(index).getKey() + "\n");
+
+         //writeTagLine(entriesIDF.get(index).getKey());
          
          if( count > 20 && fullResult == false ) {
             return;
          }
          
          count++;
+         Thread.sleep(500);
 		}
 	}
 	
@@ -281,7 +296,7 @@ public class WikiSearch {
 		return search;
 	}
 
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) throws IOException, InterruptedException {
 
 		// make a JedisIndex
 		Jedis jedis = JedisMaker.make();
