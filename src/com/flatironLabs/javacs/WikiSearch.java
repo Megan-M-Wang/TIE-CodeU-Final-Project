@@ -62,8 +62,17 @@ public class WikiSearch {
 
    public void writeTagLine( String url ) throws IOException {
       Document doc = Jsoup.connect(url).get();
-      System.out.println(doc.select("meta[name=description]").get(0).attr("content"));
-   } 
+      String para = doc.select("p").text();
+	   String tag;
+
+	   if (para.length() > 140) {
+		   tag = para.substring(0, 140);
+	   } else {
+		   tag = para;
+	   }
+
+	   System.out.println(tag + "...\n");
+   }
 
 	/**
 	 * Prints the contents in order of term frequency.
@@ -94,9 +103,10 @@ public class WikiSearch {
          readTitle(entriesIDF.get(index).getKey());
          
          //Print the url and add it to the list of already indexed terms
-			System.out.println(entriesIDF.get(index).getKey() + "\n");
+			System.out.println(entriesIDF.get(index).getKey());
 
-         //writeTagLine(entriesIDF.get(index).getKey());
+			// print tag
+         writeTagLine(entriesIDF.get(index).getKey());
          
          if( count > 20 && fullResult == false ) {
             return;
