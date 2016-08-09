@@ -85,9 +85,9 @@ public class WikiCrawler {
       //Index the page and queue the Internal links
       index.indexPage(url, paragraph);
 
-      if( url.contains("https://en.wikipedia.org/")) {
+//      if( url.contains("https://en.wikipedia.org/")) {
          queueInternalLinks(paragraph);
-      }
+  //    }
 
 		return url;
 	}
@@ -138,11 +138,12 @@ public class WikiCrawler {
 		// make a WikiCrawler
 		Jedis jedis = JedisMaker.make();
 		JedisIndex index = new JedisIndex(jedis); 
-      // index.deleteTermCounters();
-      // index.deleteURLSets();
-		// index.deleteAllKeys();
-		//String source = "https://en.wikipedia.org/wiki/Main_Page";
+
       String source = "https://en.wikipedia.org/wiki/Java_(programming_language)";
+      index.deleteTermCounters();
+      index.deleteURLSets();
+      index.deleteAllKeys();
+		//String source = "https://en.wikipedia.org/wiki/Main_Page";
 		WikiCrawler wc = new WikiCrawler(source, index);
 		
 		// for testing purposes, load up the queue
