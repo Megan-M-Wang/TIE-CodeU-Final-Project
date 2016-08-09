@@ -85,9 +85,9 @@ public class WikiCrawler {
       //Index the page and queue the Internal links
       index.indexPage(url, paragraph);
 
-//      if( url.contains("https://en.wikipedia.org/")) {
+      if( url.contains("https://en.wikipedia.org/")) {
          queueInternalLinks(paragraph);
-  //    }
+      }
 
 		return url;
 	}
