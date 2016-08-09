@@ -11,6 +11,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.lang.Math;
 
+import org.jsoup.Connection;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 import redis.clients.jedis.Jedis;
 import java.util.Scanner;
 import java.util.*;
@@ -51,7 +54,7 @@ public class WikiSearch {
 	 * 
 	 * @param map
 	 */
-	private void print(boolean fullResult) {
+	private void print(boolean fullResult) throws IOException {
     
       //Get the list of entries and the size (# of urls with term
 		List<Entry<String, Double>> entries = sort();
@@ -71,9 +74,15 @@ public class WikiSearch {
       int count = 1;
       //Print out in reverse order (highest ranking first)
 		for (int index = entriesIDF.size() - 1; index >= 0; index-- ) {
-            
+        
+         //Connect to url - get the title and print it
+         Document doc = Jsoup.connect(entriesIDF.get(index).getKey()).get();
+         String title = doc.title();
+         System.out.println(title);
+
          //Print the url and add it to the list of already indexed terms
 			System.out.println(entriesIDF.get(index).getKey());
+         System.out.println();
          
          if( count > 20 && fullResult == false ) {
             return;
@@ -213,42 +222,39 @@ public class WikiSearch {
 	}
 
 
-	public static ArrayList<WikiSearch> searchTerms(String term, JedisIndex index) {
+	public static WikiSearch searchTerms(String term, JedisIndex index) {
 		ArrayList<WikiSearch> termArray = new ArrayList<WikiSearch>();
-		//termArray.add(search(term, index));
+		WikiSearch search = search(term, index);
 
 		int searchIndex;
 		String term1;
 		String term2;
-		WikiSearch search1;
-		WikiSearch search2;
 
-
+      //Or check
 		if (term.contains(" or ")) {
 			searchIndex = term.indexOf(" or ");
 			term1 = term.substring(0, searchIndex);
 			term2 = term.substring(searchIndex + 4);
-			search1 = search(term1, index);
-			search2 = search(term2, index);
-			termArray.add(search1.or(search2));
+			search = search.or(search(term1, index));
+			search = search.or(search(term2, index));
 		}
 
+      //And check
 		else if (term.contains(" and ")) {
 			searchIndex = term.indexOf(" and ");
 			term1 = term.substring(0, searchIndex);
 			term2 = term.substring(searchIndex + 5);
-			search1 = search(term1, index);
-			search2 = search(term2, index);
-			termArray.add(search1.and(search2));
+			search = search.or(search(term1, index));
+			search = search.and(search(term2, index));
 		}
 
+      //Minus check
 		else if (term.contains(" minus ")) {
 			searchIndex = term.indexOf(" minus ");
 			term1 = term.substring(0, searchIndex);
 			term2 = term.substring(searchIndex + 7);
-			search1 = search(term1, index);
-			search2 = search(term2, index);
-			termArray.add(search1.minus(search2));
+			search = search.or(search(term1, index));
+			search = search.minus(search(term2, index));
 		}
 
       else {
@@ -272,7 +278,7 @@ public class WikiSearch {
          termArray.add(sentenceIntersect);
          termArray.add(sentenceUnion.minus(sentenceIntersect));
       } 
-		return termArray;
+		return search;
 	}
 
 	public static void main(String[] args) throws IOException {
@@ -293,10 +299,11 @@ public class WikiSearch {
 
 		  // Accounting for lone terms, intersection, union, and minus
 		  System.out.println("\nQuery: " + term1);
-		  ArrayList<WikiSearch> alltheseterms = searchTerms(term1, index);
-		  for (WikiSearch search: alltheseterms) {
+        WikiSearch search = searchTerms(term1,index);
+		  //ArrayList<WikiSearch> alltheseterms = searchTerms(term1, index);
+		  //for (WikiSearch search: alltheseterms) {
 			  search.print(false);
-		  }
+		  //}
 
         //Prompt for new input
         System.out.println("\nEnter search term: ");
