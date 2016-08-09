@@ -138,9 +138,9 @@ public class WikiCrawler {
 		// make a WikiCrawler
 		Jedis jedis = JedisMaker.make();
 		JedisIndex index = new JedisIndex(jedis); 
-      index.deleteTermCounters();
-      index.deleteURLSets();
-      index.deleteAllKeys();
+      // index.deleteTermCounters();
+      // index.deleteURLSets();
+		// index.deleteAllKeys();
 		//String source = "https://en.wikipedia.org/wiki/Main_Page";
       String source = "https://en.wikipedia.org/wiki/Java_(programming_language)";
 		WikiCrawler wc = new WikiCrawler(source, index);
@@ -162,6 +162,6 @@ public class WikiCrawler {
             System.out.println(count);
          }
             // REMOVE THIS BREAK STATEMENT WHEN crawl() IS WORKING
-		} while (count < 10000);
+		} while (count < 1000);
 	}
 }
