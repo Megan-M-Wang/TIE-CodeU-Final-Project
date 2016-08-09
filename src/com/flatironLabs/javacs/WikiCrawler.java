@@ -164,6 +164,6 @@ public class WikiCrawler {
             System.out.println(count);
          }
             // REMOVE THIS BREAK STATEMENT WHEN crawl() IS WORKING
-		} while (count < 1000);
+		} while (count < 10000);
 	}
 }
